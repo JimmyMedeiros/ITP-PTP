@@ -5,7 +5,6 @@ void getHeader (FILE *imagem, char *formato, int* tamanho_x, int* tamanho_y){
 	/* Pegar as informações do cabeçalho */
 	char c = 'a';
 	fgets (formato, 100, imagem);
-	formato[2] = '\0';
 	c = fgetc (imagem);
 	if (c == '#')
 		while (c != '\n')
@@ -14,8 +13,9 @@ void getHeader (FILE *imagem, char *formato, int* tamanho_x, int* tamanho_y){
 		fseek ( imagem , -1 , SEEK_CUR );
 	fscanf(imagem, "%d %d", tamanho_x, tamanho_y);
 }
-	/* Armazena os bits de cada caracter */
-	/*while ((c = fgetc (texto)) != EOF) {
+	/* Armazena os bits de cada caracter 
+	char c = 'a', bits[8],
+	while ((c = fgetc (texto)) != EOF) {
 		printf("%c", c);
 		for (i = 0; i < 8; ++i)
 		{
