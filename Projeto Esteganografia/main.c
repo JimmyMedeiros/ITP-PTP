@@ -1,86 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-void getHeader (FILE *imagem, char *formato, int* tamanho_x, int* tamanho_y){
+enum colors {
+	red=0, green, blue
+};
+typedef struct
+{
+	unsigned char rgb[3];
+}PixelRGB;
+
+void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range){
 	/* Pegar as informações do cabeçalho */
 	char c = 'a';
-	fgets (formato, 100, imagem);
-	c = fgetc (imagem);
+	fscanf (image, "%s", formato);
+	c = fgetc (image);// pegar o '\n'
+	c = fgetc (image);
 	if (c == '#')
 		while (c != '\n')
-			c = fgetc (imagem);
+			c = fgetc (image);
 	else
-		fseek ( imagem , -1 , SEEK_CUR );
-	fscanf(imagem, "%d %d", tamanho_x, tamanho_y);
+		fseek ( image , -1 , SEEK_CUR );
+	fscanf(image, "%d %d %d%c", xSize, ySize, range, &c); // c armazena a tabulação ('\t')
 }
-	/* Armazena os bits de cada caracter 
-	char c = 'a', bits[8],
-	while ((c = fgetc (texto)) != EOF) {
-		printf("%c", c);
-		for (i = 0; i < 8; ++i)
+/* Alocação e desalocação da Matriz */
+void alocarMatrizDePixel (PixelRGB*** pixelMatrix, int xSize, int ySize){
+	*pixelMatrix = (PixelRGB **) malloc(ySize * sizeof(PixelRGB*));
+	for (int i = 0; i < ySize; ++i)
+		(*pixelMatrix)[i] = malloc(xSize * sizeof(PixelRGB));
+}
+void desalocarMatrizDePixel (PixelRGB*** pixelMatrix, int ySize){
+	for (int i = 0; i < ySize; ++i)
+		free((*pixelMatrix)[i]);
+	free(*pixelMatrix);
+}
+/* Coloca os caracteres na imagem */
+PixelRGB** swapLastBit (PixelRGB **pixel, char characater){
+	unsigned char r;
+	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
+	for (int i = 0; i < 8; ++i)
+	{
+		r = characater%2; // armazena cada bit do caracter de trás para frente
+		if (r == 1)
 		{
-			bits[7-i] = c%2;
-			c/= 2;
+			(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] | r; // ex: 100101 | 1 = 0
+		} else {
+			(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] ^ 1; // ex: 100101 ^ 1 = 
 		}
-	}*/
+		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
+			++pixel;
+		characater /= 2; // diminui o caracter
+	}
+	return ++pixel;
+}
+/* Recupera os caracteres da imagem */
+void getMessage (FILE *image, char* word){
+	char f[3];
+	unsigned char c, letter = 0;
+	int i, x, y, r; // Só para armezenar as variáveis do getHeader
+	getHeader(image, f, &x, &y, &r);
+	for (i = 0; i < 5; ++i){
+		for (int j = 0; j < 8; ++j){
+			fscanf(image, "%c", &c);
+			c %= 2; // pega o último bit
+			letter += c * pow(2, j);
+		}
+		word[i] = letter;
+		letter = 0;
+	}
+	word[i] = '\0';
+}
 
 int main(int argc, char const *argv[])
 {
-	FILE *imagem, *texto, *teste;
-	// char c = 'a', bits[8], 
+	FILE *imagem, *texto, *imagemSaida;
 	char formato[3];
-	int i, j, k; 
-	int tamanho_x, tamanho_y;
+	int i, j;
+	int tamanho_x, tamanho_y, extensao;
 	
 	/* Abrir os arquivos passados pelo terminal */
-	if ((imagem = fopen(argv[argc - 1], "r+")) == NULL)
+	if ((imagem = fopen(argv[argc - 1], "r")) == NULL)
 		perror("O Seguinte erro ocorre:\n");
-
+	if ((imagemSaida = fopen("saida.ppm", "w+")) == NULL)
+		perror("O Seguinte erro ocorre:\n");
 	if ((texto = fopen(argv[argc - 4], "r")) == NULL)
 		perror("O Seguinte erro ocorre:\n");
-	/* Arquivo teste para matriz */
-	if ((teste = fopen("teste.txt", "w")) == NULL)
-		perror("O Seguinte erro ocorre:\n");
+	
+	/* Pega as informações do cabeçário */
+	getHeader (imagem, formato, &tamanho_x, &tamanho_y, &extensao);
 
-	getHeader (imagem, formato, &tamanho_x, &tamanho_y);
-	printf("Fomarto: %s\nTamanho x: %d\nTamanho y: %d\nQuantidade de linhas: %d\n", formato, tamanho_x, tamanho_y, tamanho_x*tamanho_y*3);
-
-	/* Alocação da matriz */
-	int ***matriz = (int***)malloc(tamanho_y*sizeof(int**));
-	for (i = 0; i < tamanho_y; ++i)
-		matriz[i] = (int**)malloc(tamanho_x*sizeof(int*));
-	for (i = 0; i < tamanho_y; ++i)
-		for (j = 0; j < tamanho_x; ++j)
-			matriz[i][j] = (int*)malloc(3*sizeof(int));
-
+	/* Aloca a matriz de Pixels */
+	PixelRGB **matrizDePixel = NULL;
+	alocarMatrizDePixel(&matrizDePixel, tamanho_x, tamanho_y);
+	
 	/* Pegar as informações da matriz */
-	int range = 1;
-	fscanf(imagem, "%d", &range);
 	for (i = 0; i < tamanho_y; ++i)
 		for (j = 0; j < tamanho_x; ++j)
-			for (k = 0; k < 3; ++k){
-				fscanf(imagem, "%d", &matriz[i][j][k]);
-				matriz[i][j][k] /= 2;
-			}
-	rewind (imagem);
-	getHeader (imagem, formato, &tamanho_x, &tamanho_y);
-	// getHeader aponta para o final da linha
+			fscanf(imagem, "%c%c%c", &matrizDePixel[i][j].rgb[red], &matrizDePixel[i][j].rgb[green], &matrizDePixel[i][j].rgb[blue]);
 
-	/* Colocando as informações da matriz em arquivo */
-	fprintf(imagem, "\n%d\n", range); // Então é necessário dar um salto
-
+	/* Alterando a imagem */
+	PixelRGB **apontador = matrizDePixel;
+	unsigned char c = 'a';
+	while ((fscanf(texto, "%c", &c)) != EOF) {
+		apontador = swapLastBit(apontador, c);
+		// (*(*apontador)).rgb[blue] = c;
+		// apontador++;
+	}
+	/* Colocando as informações da matriz em arquivo de Saída */
+	printf("Gerando arquivo de saída\n");
+	fprintf(imagemSaida, "%s\n%d %d\n%d\n", formato, tamanho_x, tamanho_y, extensao);
 	for (i = 0; i < tamanho_y; ++i)
 		for (j = 0; j < tamanho_x; ++j)
-			for (k = 0; k < 3; ++k){
-				fprintf(teste, "%d\n", matriz[i][j][k]);
-				fprintf(imagem, "%d\n", matriz[i][j][k]);
-			}
+			fprintf(imagemSaida, "%c%c%c", matrizDePixel[i][j].rgb[red], matrizDePixel[i][j].rgb[green], matrizDePixel[i][j].rgb[blue]);
+
+	/* Pegando a mensagem */
+	char letra[10];
+	getMessage (imagemSaida, letra);
+	printf("%s\n", letra);
 
 	/* Liberando espaço */
-	for (i = 0; i < tamanho_y; ++i)
-		for (j = 0; j < tamanho_x; ++j)
-			free(matriz[i][j]);
-		free(matriz[i]);
-	free(matriz);
+	desalocarMatrizDePixel(&matrizDePixel, tamanho_y);
 	return 0;
 }
