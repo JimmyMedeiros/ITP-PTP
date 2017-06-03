@@ -41,12 +41,15 @@ PixelRGB** swapLastBit (PixelRGB **pixel, char characater){
 	for (int i = 0; i < 8; ++i)
 	{
 		r = characater%2; // armazena cada bit do caracter de trás para frente
-		if (r == 1)
+		
+		if ((*(*pixel)).rgb[i%3]%2 != r)
 		{
-			(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] | r; // ex: 100101 | 1 = 0
-		} else {
-			(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] ^ 1; // ex: 100101 ^ 1 = 
+			if (r == 1)
+				(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] ^ r; // ex: 100101 ^ 1 = 0
+			else 
+				(*(*pixel)).rgb[i%3]--; // ex: 100101 ^ 1 = 0
 		}
+
 		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
 			++pixel;
 		characater /= 2; // diminui o caracter
@@ -54,17 +57,20 @@ PixelRGB** swapLastBit (PixelRGB **pixel, char characater){
 	return ++pixel;
 }
 /* Recupera os caracteres da imagem */
-void getMessage (FILE *image, char* word){
+void getMessage (FILE *image, char* word, int wordSize){
 	char f[3];
-	unsigned char c, letter = 0;
+	unsigned char c = 0, letter = 0;
 	int i, x, y, r; // Só para armezenar as variáveis do getHeader
 	getHeader(image, f, &x, &y, &r);
-	for (i = 0; i < 5; ++i){
+	for (i = 0; i < wordSize; ++i){
 		for (int j = 0; j < 8; ++j){
 			fscanf(image, "%c", &c);
 			c %= 2; // pega o último bit
+			//printf("%d", c);
 			letter += c * pow(2, j);
 		}
+		fscanf(image, "%c", &c); // pega o valor blue que sobrou
+		//printf("\n");
 		word[i] = letter;
 		letter = 0;
 	}
@@ -85,18 +91,18 @@ int main(int argc, char const *argv[])
 		perror("O Seguinte erro ocorre:\n");
 	if ((texto = fopen(argv[argc - 4], "r")) == NULL)
 		perror("O Seguinte erro ocorre:\n");
-	
+
 	/* Pega as informações do cabeçário */
 	getHeader (imagem, formato, &tamanho_x, &tamanho_y, &extensao);
 
 	/* Aloca a matriz de Pixels */
 	PixelRGB **matrizDePixel = NULL;
-	alocarMatrizDePixel(&matrizDePixel, tamanho_x, tamanho_y);
+	alocarMatrizDePixel(&matrizDePixel, tamanho_y, tamanho_x);
 	
 	/* Pegar as informações da matriz */
 	for (i = 0; i < tamanho_y; ++i)
 		for (j = 0; j < tamanho_x; ++j)
-			fscanf(imagem, "%c%c%c", &matrizDePixel[i][j].rgb[red], &matrizDePixel[i][j].rgb[green], &matrizDePixel[i][j].rgb[blue]);
+			fscanf(imagem, "%c%c%c", &matrizDePixel[j][i].rgb[red], &matrizDePixel[j][i].rgb[green], &matrizDePixel[j][i].rgb[blue]);
 
 	/* Alterando a imagem */
 	PixelRGB **apontador = matrizDePixel;
@@ -106,19 +112,25 @@ int main(int argc, char const *argv[])
 		// (*(*apontador)).rgb[blue] = c;
 		// apontador++;
 	}
+	swapLastBit(apontador, 3); // Colocando o sinal de final de texto;
+
 	/* Colocando as informações da matriz em arquivo de Saída */
 	printf("Gerando arquivo de saída\n");
 	fprintf(imagemSaida, "%s\n%d %d\n%d\n", formato, tamanho_x, tamanho_y, extensao);
 	for (i = 0; i < tamanho_y; ++i)
 		for (j = 0; j < tamanho_x; ++j)
-			fprintf(imagemSaida, "%c%c%c", matrizDePixel[i][j].rgb[red], matrizDePixel[i][j].rgb[green], matrizDePixel[i][j].rgb[blue]);
+			fprintf(imagemSaida, "%c%c%c", matrizDePixel[j][i].rgb[red], matrizDePixel[j][i].rgb[green], matrizDePixel[j][i].rgb[blue]);
 
 	/* Pegando a mensagem */
-	char letra[10];
-	getMessage (imagemSaida, letra);
+	rewind(imagemSaida);
+	char letra[200];
+	getMessage (imagemSaida, letra, 200);
 	printf("%s\n", letra);
 
-	/* Liberando espaço */
+	/* Liberando espaço e fechando arquivos */
 	desalocarMatrizDePixel(&matrizDePixel, tamanho_y);
+	fclose(imagem);
+	fclose(texto);
+	fclose(imagemSaida);
 	return 0;
 }
