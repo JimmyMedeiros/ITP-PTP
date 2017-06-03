@@ -79,7 +79,7 @@ void getMessage (FILE *image, char* word, int wordSize){
 
 int main(int argc, char const *argv[])
 {
-	FILE *imagem, *texto, *imagemSaida;
+	FILE *imagem, *texto, *imagemSaida, *textoSaida;
 	char formato[3];
 	int i, j;
 	int tamanho_x, tamanho_y, extensao;
@@ -90,6 +90,8 @@ int main(int argc, char const *argv[])
 	if ((imagemSaida = fopen("saida.ppm", "w+")) == NULL)
 		perror("O Seguinte erro ocorre:\n");
 	if ((texto = fopen(argv[argc - 4], "r")) == NULL)
+		perror("O Seguinte erro ocorre:\n");
+	if ((textoSaida = fopen("textoSaida.txt", "w")) == NULL)
 		perror("O Seguinte erro ocorre:\n");
 
 	/* Pega as informações do cabeçário */
@@ -112,7 +114,7 @@ int main(int argc, char const *argv[])
 		// (*(*apontador)).rgb[blue] = c;
 		// apontador++;
 	}
-	swapLastBit(apontador, 3); // Colocando o sinal de final de texto;
+	swapLastBit(apontador, '\0'); // Colocando o sinal de final de texto;
 
 	/* Colocando as informações da matriz em arquivo de Saída */
 	printf("Gerando arquivo de saída\n");
@@ -125,7 +127,7 @@ int main(int argc, char const *argv[])
 	rewind(imagemSaida);
 	char letra[200];
 	getMessage (imagemSaida, letra, 200);
-	printf("%s\n", letra);
+	fprintf(textoSaida, "%s", letra);
 
 	/* Liberando espaço e fechando arquivos */
 	desalocarMatrizDePixel(&matrizDePixel, tamanho_y);
