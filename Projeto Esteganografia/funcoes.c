@@ -26,19 +26,19 @@ void desalocarMatrizDePixel (PixelRGB*** pixelMatrix, int ySize){
 	free(*pixelMatrix);
 }
 /* Coloca os caracteres na imagem */
-PixelRGB** swapLastBit (PixelRGB **pixel, char characater){
+PixelRGB* swapLastBit (PixelRGB *pixel, char characater){
 	unsigned char r;
 	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
 	for (int i = 0; i < 8; ++i)
 	{
 		r = characater%2; // armazena cada bit do caracter de trás para frente
 		
-		if ((*(*pixel)).rgb[i%3]%2 != r)
+		if ((*pixel).rgb[i%3]%2 != r)
 		{
 			if (r == 1)
-				(*(*pixel)).rgb[i%3] = (*(*pixel)).rgb[i%3] ^ r; // ex: 100101 ^ 1 = 0
+				(*pixel).rgb[i%3] = (*pixel).rgb[i%3] ^ r; // ex: 100101 ^ 1 = 0
 			else 
-				(*(*pixel)).rgb[i%3]--; // ex: 100101 ^ 1 = 0
+				(*pixel).rgb[i%3]--; // ex: 100101 ^ 1 = 0
 		}
 
 		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
@@ -66,4 +66,24 @@ void getMessage (FILE *image, char* word, int wordSize){
 		letter = 0;
 	}
 	word[i] = '\0';
+	/*
+	while (count < wordSize){
+		for (i = 0; i < (x/3); ++i){
+			for (j = 0; j < 8; ++j){
+				fscanf(image, "%c", &c);
+				c %= 2; // pega o último bit
+				letter += c * pow(2, j); // Soma o valor da letra
+			}
+			count++;
+			fscanf(image, "%c", &c); // pega o valor blue que sobrou
+			word[i] = letter; // armazena o caracter na string word
+			letter = 0;
+		}
+		for (j = 0; j < (x%3); ++j)
+		{
+			fscanf(image, "%c%c%c", &c, &c, &c);
+		}
+	}
+	word[count] = '\0';*/
+
 }
