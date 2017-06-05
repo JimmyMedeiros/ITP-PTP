@@ -22,26 +22,27 @@ int main(int argc, char const *argv[])
 	/* Pega as informações do cabeçário */
 	getHeader (imagem, formato, &tamanho_x, &tamanho_y, &extensao);
 
-	/* Aloca a matriz de Pixels 
-	OBS: Não seria melhor alocar unidimensionalmente para facilitar a iteração? */
-	PixelRGB **matrizDePixel = NULL;
+	/* Aloca a matriz de Pixels */
+	PixelRGB *matrizDePixel = NULL;
 	alocarMatrizDePixel(&matrizDePixel, tamanho_x, tamanho_y);
-	
+	if (matrizDePixel == NULL)
+		fprintf(stderr, "Memória insuficiente.\n");
+
 	/* Pegar as informações da matriz */
-	for (i = 0; i < tamanho_y; ++i)
-		for (j = 0; j < tamanho_x; ++j)
-			fscanf(imagem, "%c%c%c", &matrizDePixel[i][j].rgb[red], &matrizDePixel[i][j].rgb[green], &matrizDePixel[i][j].rgb[blue]);
+	for (i = 0; i < (tamanho_y * tamanho_x); ++i)
+		fscanf(imagem, "%c%c%c", &matrizDePixel[i].rgb[red], &matrizDePixel[i].rgb[green], &matrizDePixel[i].rgb[blue]);
 
 	/* Antes de alterar a imagem, verifica se cabe a mensagem */
 	fseek(texto, 0L, SEEK_END);
-	long int tamanhoMensagem = ftell(texto), MensagemMax = (tamanho_x/3);
+	long int tamanhoMensagem = ftell(texto), MensagemMax = ((tamanho_x*tamanho_y)/3);
 	if(tamanhoMensagem > MensagemMax){
 		fprintf(stderr, "A mensagem do arquivo \"%s\" não cabe na imagem.\nO arquivo deve ter no máximo %ld bytes.\n", nomeTexto, MensagemMax);
 		return 1;
 	}
-
-	/* Alterando a imagem */
+	
+	/* Alterando a imagem 
 	unsigned char c;
+	char* apontador;
 	fscanf(texto, "%c", &c);
 	for (i = 0; i < tamanho_y && c != EOF; ++i){
 		PixelRGB *apontador = &(matrizDePixel[i][0]); // pega matrizDePixel[0]
@@ -49,20 +50,30 @@ int main(int argc, char const *argv[])
 			apontador = swapLastBit(apontador, c);
 			fscanf(texto, "%c", &c);
 		}
-		/*while ((fscanf(texto, "%c", &c)) != EOF) {
-			apontador = swapLastBit(apontador, c);
-			// (*(*apontador)).rgb[blue] = c;
-			// apontador++;
-		}*/
-		// swapLastBit(apontador, '\0'); // Colocando o sinal de final de texto;
 	}
+	while ((fscanf(texto, "%c", &c)) != EOF) {
+		apontador = swapLastBit(apontador, c);
+		// (*(*apontador)).rgb[blue] = c;
+		// apontador++;
+	}
+		// swapLastBit(apontador, '\0'); // Colocando o sinal de final de texto;*/
+	
+	/* Alterando a imagem */
+	rewind(texto);
+	PixelRGB *apontador = matrizDePixel;
+	char c = 'a';
+	while ((fscanf(texto, "%c", &c)) != EOF){
+		apontador = swapLastBit(apontador, c);
+	}
+	swapLastBit(apontador, '\0'); // Colocando o sinal de final de texto;
 	
 	/* Colocando as informações da matriz em arquivo de Saída */
 	printf("Gerando arquivo de saída\n");
 	fprintf(imagemSaida, "%s\n%d %d\n%d\n", formato, tamanho_x, tamanho_y, extensao);
 	for (i = 0; i < tamanho_y; ++i)
-		for (j = 0; j < tamanho_x; ++j)
-			fprintf(imagemSaida, "%c%c%c", matrizDePixel[i][j].rgb[red], matrizDePixel[i][j].rgb[green], matrizDePixel[i][j].rgb[blue]);
+		for (j = 0; j < tamanho_x; ++j){
+			fprintf(imagemSaida, "%c%c%c", matrizDePixel[i*tamanho_x + j].rgb[red], matrizDePixel[i*tamanho_x + j].rgb[green], matrizDePixel[i*tamanho_x + j].rgb[blue]);
+		}
 
 	/* Pegando a mensagem */
 	rewind(imagemSaida);
@@ -71,9 +82,6 @@ int main(int argc, char const *argv[])
 	fprintf(textoSaida, "%s", letra);
 
 	/* Liberando espaço e fechando arquivos */
-	for (i = 0; i < tamanho_y; ++i){
-		free(matrizDePixel[i]);
-	}
 	free(matrizDePixel);
 	fclose(imagem);
 	fclose(texto);

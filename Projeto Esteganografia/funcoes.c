@@ -15,20 +15,34 @@ void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range){
 	fscanf(image, "%d %d %d%c", xSize, ySize, range, &c); // c armazena a tabulação ('\t')
 }
 /* Alocação e desalocação da Matriz */
-void alocarMatrizDePixel (PixelRGB*** pixelMatrix, int xSize, int ySize){
-	*pixelMatrix = (PixelRGB **) malloc(ySize * sizeof(PixelRGB*));
-	for (int i = 0; i < ySize; ++i)
-		(*pixelMatrix)[i] = malloc(xSize * sizeof(PixelRGB));
+void alocarMatrizDePixel (PixelRGB** pixelMatrix, int xSize, int ySize){
+	*pixelMatrix = (PixelRGB *) malloc(xSize * ySize * sizeof(PixelRGB));
 }
-void desalocarMatrizDePixel (PixelRGB*** pixelMatrix, int ySize){
+/*void desalocarMatrizDePixel (PixelRGB** pixelMatrix, int ySize){
 	for (int i = 0; i < ySize; ++i)
 		free((*pixelMatrix)[i]);
 	free(*pixelMatrix);
-}
-/* Coloca os caracteres na imagem */
-PixelRGB* swapLastBit (PixelRGB *pixel, char characater){
+}*/
+/*char* swapLastBit (char* pointer, char characacter){
 	unsigned char r;
-	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
+	Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão
+	for (int i = 0; i < 8; ++i){
+		r = characacter%2; // armazena cada bit do caracter de trás para frente
+		if ((*pixel).rgb[i%3]%2 != r){
+			if (r == 1)
+				(*pixel).rgb[i%3] = (*pixel).rgb[i%3] ^ r; // ex: 100101 ^ 1 = 0
+			else 
+				(*pixel).rgb[i%3]--; // ex: 100101 ^ 1 = 0
+		}
+		++pointer;
+		characacter /= 2; // diminui o caracter
+	}
+	return pointer;
+}*/
+/* Coloca os caracteres na imagem */
+/*PixelRGB* swapLastBit (PixelRGB *pixel, char characater){
+	unsigned char r;
+	Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão
 	for (int i = 0; i < 8; ++i)
 	{
 		r = characater%2; // armazena cada bit do caracter de trás para frente
@@ -46,6 +60,24 @@ PixelRGB* swapLastBit (PixelRGB *pixel, char characater){
 		characater /= 2; // diminui o caracter
 	}
 	return ++pixel;
+}*/
+/* Coloca os caracteres na imagem */
+PixelRGB* swapLastBit (PixelRGB *pixel, char character){
+	unsigned char r;
+	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
+	for (int i = 0; i < 8; ++i){
+		r = character%2; // armazena cada bit do caracter de trás para frente
+		if ((*pixel).rgb[i%3]%2 != r){ // verifica se o último bit é igual
+			if (r == 1)
+				(*pixel).rgb[i%3] = (*pixel).rgb[i%3] | r; // ex: 100101 ^ 1 = 1
+			else 
+				(*pixel).rgb[i%3]--; // ex: 100101 ^ 1 = 0
+		}
+		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
+			++pixel;
+		character /= 2; // diminui o caracter
+	}
+	return ++pixel;
 }
 /* Recupera os caracteres da imagem */
 void getMessage (FILE *image, char* word, int wordSize){
@@ -61,7 +93,6 @@ void getMessage (FILE *image, char* word, int wordSize){
 			letter += c * pow(2, j);
 		}
 		fscanf(image, "%c", &c); // pega o valor blue que sobrou
-		//printf("\n");
 		word[i] = letter;
 		letter = 0;
 	}

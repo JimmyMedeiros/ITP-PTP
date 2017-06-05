@@ -15,9 +15,10 @@ typedef struct
 
 void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range);
 /* Alocação e desalocação da Matriz */
-void alocarMatrizDePixel (PixelRGB*** pixelMatrix, int xSize, int ySize);
-void desalocarMatrizDePixel (PixelRGB*** pixelMatrix, int ySize);
+void alocarMatrizDePixel (PixelRGB** pixelMatrix, int xSize, int ySize);
+// void desalocarMatrizDePixel (PixelRGB** pixelMatrix, int ySize);
 /* Coloca os caracteres na imagem */
+//char* swapLastBit (char* pointer, char characacter);
 PixelRGB* swapLastBit (PixelRGB *pixel, char characater);
 /* Recupera os caracteres da imagem */
 void getMessage (FILE *image, char* word, int wordSize);
