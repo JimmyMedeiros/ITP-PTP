@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./gopt -a -b -c teste
+./gopt -e -i entrada
