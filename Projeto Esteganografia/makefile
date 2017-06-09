@@ -5,9 +5,10 @@ OBJS = main.o funcoes.o
 
 $(PROG): $(OBJS)
 	$(CC) -o $(PROG) $(OBJS) -lm
+	rm -f $(OBJS)
 main.o: funcoes.h
 	$(CC) $(CFLAGS) -c main.c
 funcoes.o:
 	$(CC) $(CFLAGS) -c funcoes.c -lm
 clean:
-	rm -f core $(PROG) $(OBJS)
+	rm -f $(OBJS)

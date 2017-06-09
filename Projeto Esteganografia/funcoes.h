@@ -8,10 +8,21 @@
 enum colors {
 	red=0, green, blue, alpha
 };
+enum formats
+{
+	ppm=0, bmp
+};
 typedef struct
 {
 	unsigned char rgb[3];
 }PixelRGB;
+typedef struct
+{
+	char format[3];
+	int xSize;
+	int ySize;
+	int range;
+}ppmHeader;
 
 void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range);
 /* Alocação e desalocação da Matriz */

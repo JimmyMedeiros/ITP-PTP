@@ -1,5 +1,5 @@
-#ifndef FUNCOES_H
-#define FUNCOES_H
+#ifndef PPM_H
+#define PPM_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,10 +21,10 @@ typedef struct
 	char format[3];
 	int xSize;
 	int ySize;
-	int range;
-}ppmHeader;
+	int color_depth; // OBS: a profundidade de cada valor RGB, e não do pixel em si
+}PPM_Header;
 
-void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range);
+void get_PPM_Header (FILE *image, char *formato, int* xSize, int* ySize, int* range);
 /* Alocação e desalocação da Matriz */
 void alocarMatrizDePixel (PixelRGB** pixelMatrix, int xSize, int ySize);
 // void desalocarMatrizDePixel (PixelRGB** pixelMatrix, int ySize);

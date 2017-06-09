@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "funcoes.h"
+#include "ppm.h"
 
-void getHeader (FILE *image, char *formato, int* xSize, int* ySize, int* range){
+void get_PPM_Header (FILE *image, char *formato, int* xSize, int* ySize, int* range){
 	/* Pegar as informações do cabeçalho */
 	char c = 'a';
 	fscanf (image, "%s", formato);

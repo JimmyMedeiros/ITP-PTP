@@ -1,39 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-/* OBS: procurar saber mais sobre #pragma pack () */
-/* 14 bytes */
-#pragma pack (2)
-typedef struct
-{
-	char type[2];// Tipo de bitmap (BM, BA, CI, CP, IC, PT)
-	unsigned int size;// O tamanho do arquivo
-	char reserved1[2];
-	char reserved2[2];
-	unsigned int offset; // Indica o começo do array de pixels
-}BMP_header;
-/* 40 bytes */
-#pragma pack (2)
-typedef struct {
-	unsigned int size;// o tamanho do dib
-	unsigned int width; // Largura da imagem em pixels
-	unsigned int height; // Altura da imagem em pixels
-	unsigned short planes; // O número de plano de cores (deve ser 1)
-	unsigned short bitCount; // A profundidade de cor, ou seja, bits por pixel
-	unsigned int compression; // Tipo de compressão (0 quando não tem compressão)
-	unsigned int sizeImage; // Tamanho da imagem RAW (0 quando não tem compressão)
-	unsigned int xPelsPerMeter; // Resolução horizontal
-	unsigned int yPelsPerMeter; // Resolução vertical
-	unsigned int clrUsed; // Número de cores na paleta de cores (valor default 0 para 2^n)
-	unsigned int clrImportant; // Número de cores importantes (0 quando todas são importantes)
-} BITMAPINFOHEADER;
-/* 24 bits ou 3 bytes */
-typedef struct 
-{
-	unsigned char blue;
-	unsigned char green;
-	unsigned char red;
-}BGRPixel;
+#include "bmp.h"
 
 void convert_little_to_big_endian(char* little, char* big){
 	for (int i = 0; i < 4; ++i)
@@ -43,6 +9,7 @@ void convert_little_to_big_endian(char* little, char* big){
 		big++;
 	}
 }
+
 void print_deb_header (BITMAPINFOHEADER dib){
 	/* Imprimir informações */
 	printf("Largura: %d, altura: %d\n", dib.width, dib.height);
@@ -56,20 +23,12 @@ void print_deb_header (BITMAPINFOHEADER dib){
 	printf("Cores importantes: %d\n", dib.clrImportant);
 }
 
-int main(int argc, char const *argv[])
-{
+int cifrar_bmp(FILE *imagem, FILE *saida){
 	// Variáveis
-	FILE *imagem, *saida;
 	BMP_header h;
 	BITMAPINFOHEADER dib;
 	BGRPixel *pixelArray;
 	
-	// Abre a imagem
-	if ((imagem = fopen("imd.bmp", "r"))==NULL)
-		fprintf(stderr, "Erro ao abrir o arquivo\n");
-	if ((saida = fopen("saida.bmp", "w"))==NULL)
-		fprintf(stderr, "Erro ao abrir o arquivo\n");
-
 	// Lê o cabeçalho BMP do arquivo
 	fread(&h, 14, 1, imagem);
 	// Lê o cabeçalho DIB do arquivo
@@ -77,8 +36,10 @@ int main(int argc, char const *argv[])
 	
 	// Aloca e lê os pixels 
 	pixelArray = malloc(dib.width * dib.height * sizeof(BGRPixel));
-	if (pixelArray == NULL)
+	if (pixelArray == NULL){
 		fprintf(stderr, "Não foi possível carregar a imagem. Memória insuficiente\n");
+		return 1;
+	}
 	
 	fread(pixelArray, sizeof(BGRPixel), dib.width * dib.height, imagem);
 
@@ -98,8 +59,6 @@ int main(int argc, char const *argv[])
 	fwrite(pixelArray, sizeof(BGRPixel), dib.width * dib.height, saida);
 	
 	free(pixelArray);
-	fclose(imagem);
-	fclose(saida);
 
 	return 0;
 }
