@@ -4,18 +4,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+// Está no cipher
 enum colors {
 	red=0, green, blue, alpha
 };
+
 enum formats
 {
 	ppm=0, bmp
 };
-typedef struct
-{
+// Está no cipher
+typedef struct{
 	unsigned char rgb[3];
 }PixelRGB;
+//
 typedef struct
 {
 	char format[3];

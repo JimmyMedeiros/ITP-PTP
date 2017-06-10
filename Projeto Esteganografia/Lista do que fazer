@@ -1,0 +1,11 @@
+Resolver:
+-Separar Cifrar e decifrar:
+	Ordem:
+		Verificar no main o formato e passar uma das duas funções:
+			1. encipher_PPM();
+			2. encipher_BMP();
+		Dentro de cada arquivo implementar as funções da seguinte forma:
+			1. ler cabeçalho
+			2. chamar a função encipher() -- ainda vai ser criada
+-Separar as bilbiotecas em bmp, ppm e uma comum (cifrar e decifrar)
+-CRIAR PELO MENOS UMA MATRIZ (ou não)
