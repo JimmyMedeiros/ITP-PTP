@@ -1,16 +1,18 @@
 PROG = steg
 CC = gcc
 CFLAGS = -Wall -ansi -pedantic -std=c11
-OBJS = main.o ppm.o cipher.o
+OBJS = main.o cipher.o ppm.o bmp.o
 
 $(PROG): $(OBJS)
 	$(CC) -o $(PROG) $(OBJS) -lm
 	rm -f $(OBJS)
-main.o: ppm.h cipher.h
+main.o: cipher.o ppm.o bmp.o 
 	$(CC) $(CFLAGS) -c main.c
-ppm.o: cipher.h
-	$(CC) $(CFLAGS) -c ./libraries/ppm.c -lm
 cipher.o:
 	$(CC) $(CFLAGS) -c ./libraries/cipher.c -lm
+ppm.o: cipher.o
+	$(CC) $(CFLAGS) -c ./libraries/ppm.c -lm
+bmp.o: cipher.o
+	$(CC) $(CFLAGS) -c ./libraries/bmp.c -lm
 clean:
 	rm -f $(OBJS)

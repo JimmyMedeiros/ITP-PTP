@@ -1,27 +1,9 @@
 #include <stdio.h>
-//#include "cipher.h"
 #include "ppm.h"
 
 
-PixelRGB* swapLastBit (PixelRGB *pixel, char character){
-	unsigned char r;
-	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
-	for (int i = 0; i < 8; ++i){
-		r = character%2; // armazena cada bit do caracter de trás para frente
-		if ((*pixel).rgb[i%3]%2 != r){ // verifica se o último bit é igual
-			if (r == 1)
-				(*pixel).rgb[i%3] = (*pixel).rgb[i%3] | r; // ex: 100101 ^ 1 = 1 
-			else 
-				(*pixel).rgb[i%3]--; // ex: 100101 ^ 1 = 0
-		}
-		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
-			++pixel;
-		character /= 2; // diminui o caracter
-	}
-	return ++pixel;
-}
 void get_PPM_Header (FILE *image, PPM_Header *hdr){
-	/* Pegar as informações do cabeçalho */
+	// Pegar as informações do cabeçalho
 	char c = 'a';
 	fscanf (image, "%s", hdr->format);
 	c = fgetc (image);// Pegar o '\n'
@@ -61,7 +43,7 @@ int encipher_PPM(FILE *imagem, FILE *imagemSaida, FILE *texto){
 	while ((fscanf(texto, "%c", &c)) != EOF){
 		ptr = swapLastBit(ptr, c);
 	}
-	swapLastBit(ptr, '\0'); // Colocando o sinal de final de texto;
+	swapLastBit(ptr, 3); // Colocando o sinal de fim de texto - EOT;
 	
 	// Colocando as informações da matriz em arquivo de Saída
 	printf("Gerando arquivo de saída\n");
@@ -73,30 +55,21 @@ int encipher_PPM(FILE *imagem, FILE *imagemSaida, FILE *texto){
 	
 	return 0;
 }
-void getMessage (FILE *image, char* word, int wordSize){
-	char f[3];
-	unsigned char c = 0, letter = 0;
-	int i, x, y, r; // Só para armezenar as variáveis do getHeader
-	getHeader(image, f, &x, &y, &r);
-	for (i = 0; i < wordSize; ++i){
-		for (int j = 0; j < 8; ++j){
-			fscanf(image, "%c", &c);
-			c %= 2; // pega o último bit
-			//printf("%d", c);
-			letter += c * pow(2, j);
-		}
-		fscanf(image, "%c", &c); // pega o valor blue que sobrou
-		word[i] = letter;
-		letter = 0;
-	}
-	word[i] = '\0';
-}
 
 void decipher_PPM (FILE *img, FILE *textoSaida){
-	fseek(texto, 0L, SEEK_END);
-	long int tamanho_Mensagem = ftell(texto);
-	// Pegando a mensagem 
-	char letras[tamanhoMensagem];
-	getMessage (img, letra, tamanho_Mensagem);
+	// Pegando o cabeçalho 
+	PPM_Header hdr;
+	get_PPM_Header (img, &hdr);
+	
+	// Pegando a mensagem
+	int tamanho_Mensagem = (hdr.xSize*hdr.ySize)/3;
+	char *letras = NULL;
+	letras = (char*)malloc(tamanho_Mensagem * sizeof(char));
+	if (letras == NULL)
+		fprintf(stderr, "Memória insuficiente\n");
+	getMessage (img, letras, tamanho_Mensagem);
+	// Colocando a mensagem no texto 
 	fprintf(textoSaida, "%s", letras);
+
+	free(letras);
 }

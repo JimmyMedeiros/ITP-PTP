@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "cipher.h"
 
-/* OBS: procurar saber mais sobre #pragma pack () */
-/* 14 bytes */
+// 14 bytes 
 #pragma pack (2)
 typedef struct
 {
@@ -18,7 +18,6 @@ typedef struct
 /* 40 bytes 
 Este trecho foi baseado no formato padrão de leitura do 
 DIB do Windows para o formato BITMAPINFOHEADER */
-#pragma pack (2)
 typedef struct {
 	unsigned int size;// o tamanho do dib
 	unsigned int width; // Largura da imagem em pixels
@@ -32,17 +31,18 @@ typedef struct {
 	unsigned int clrUsed; // Número de cores na paleta de cores (valor default 0 para 2^n)
 	unsigned int clrImportant; // Número de cores importantes (0 quando todas são importantes)
 } BITMAPINFOHEADER;
-/* 24 bits ou 3 bytes */
+// 24 bits ou 3 bytes
+#pragma pack (1)
 typedef struct {
 	unsigned char blue;
 	unsigned char green;
 	unsigned char red;
 }BGRPixel;
 
-void convert_little_to_big_endian(char* little, char* big);
-
 void print_deb_header (BITMAPINFOHEADER dib);
 
-int cifrar_bmp(FILE *imagem, FILE *saida);
+int encipher_BMP(FILE *imagem, FILE *saida, FILE *texto);
+
+void decipher_BMP (FILE *img, FILE *textoSaida);
 
 #endif

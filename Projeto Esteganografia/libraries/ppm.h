@@ -17,13 +17,9 @@ typedef struct{
 	int color_depth; // OBS: a profundidade de cada valor RGB, e não do pixel em si
 }PPM_Header;
 
-PixelRGB* swapLastBit (PixelRGB *pixel, char character);
-
 void get_PPM_Header (FILE *image, PPM_Header *hdr);
 
 int encipher_PPM(FILE *imagem, FILE *imagemSaida, FILE *texto);
-
-void getMessage (FILE *image, char* word, int wordSize);
 
 void decipher_PPM (FILE *img, FILE *textoSaida);
 

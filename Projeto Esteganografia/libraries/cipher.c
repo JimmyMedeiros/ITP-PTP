@@ -20,17 +20,13 @@ PixelRGB* swapLastBit (PixelRGB *pixel, char character){
 	return ++pixel;
 }
 
-
-void encipher(void *array){
-	// TODO
-}
-/* Recupera os caracteres da imagem */
+// Recupera os caracteres da imagem 
 void getMessage (FILE *image, char* word, int wordSize){
-	char f[3];
+	// Pega a Mensagem até encontrar um EOT ou até a capavidade máxima da imagem
+	int i = 0; 
 	unsigned char c = 0, letter = 0;
-	int i, x, y, r; // Só para armezenar as variáveis do getHeader
-	getHeader(image, f, &x, &y, &r);
-	for (i = 0; i < wordSize; ++i){
+	while (letter != 3 && i < wordSize){
+		letter = 0;
 		for (int j = 0; j < 8; ++j){
 			fscanf(image, "%c", &c);
 			c %= 2; // pega o último bit
@@ -39,10 +35,7 @@ void getMessage (FILE *image, char* word, int wordSize){
 		}
 		fscanf(image, "%c", &c); // pega o valor blue que sobrou
 		word[i] = letter;
-		letter = 0;
+		++i;
 	}
-	word[i] = '\0';
-}
-void decipher(void *array, void *output){
-	// TODO
+	word[i-1] = '\0';
 }

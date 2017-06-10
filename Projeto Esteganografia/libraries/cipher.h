@@ -9,8 +9,8 @@ typedef struct{
 	unsigned char rgb[3];
 }PixelRGB;
 
-void encipher(void *array);
+PixelRGB* swapLastBit (PixelRGB *pixel, char character);
 
-void decipher(void *array, void *output);
+void getMessage (FILE *image, char* word, int wordSize);
 
 #endif
