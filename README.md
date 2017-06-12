@@ -1,6 +1,10 @@
 # ITP-PTP
 Exercícios da disciplina de Técnicas de Programação
 
+Lembretes de Esteganografia:
+-usar shift left e shift right para remover math.h
+-modificar o bitwise na codificação
+
 Sobre a "Lista - Arquivos, Ponteiros, Strings e Funcoes":
 
 Existem dois arquivos para teste da questão 14 com todas as matrizes possíveis desde 1x1 até 5x5. Ao executar o arquivo pelo terminal execute assim:
