@@ -9,6 +9,7 @@
 #include "./libraries/cipher.h"
 #include "./libraries/ppm.h"
 #include "./libraries/bmp.h"
+#include "./libraries/gif.h"
 
 int main(int argc, char *argv[])
 {
@@ -86,6 +87,11 @@ int main(int argc, char *argv[])
 			if ((imgSaida = fopen("saida.bmp", "w")) == NULL)
 				perror("O Seguinte erro ocorreu:\n");
 			encipher_BMP(img, imgSaida, texto);
+		}
+		else if (strcmp(format, "gif")==0 || strcmp(format, "GIF")==0){
+			if ((imgSaida = fopen("saida.gif", "w")) == NULL)
+				perror("O Seguinte erro ocorreu:\n");
+			encipher_GIF(img, imgSaida, texto);
 		}
 		// Fechar arquivos
 		fclose(imgSaida);
