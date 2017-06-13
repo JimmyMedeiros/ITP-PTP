@@ -1,0 +1,3 @@
+Algumas Observações para executar o programa:
+1 - O arquivo com o texto que deve ser cifrado na imagem não deve conter caracteres que não façam parte da table ASCII
+2 - O tamanho máximo do arquivo a ser cifrado segue a fórmula: (w*h)/3 bytes. Onde: w = largura em pixels, h = altura em pixels.
