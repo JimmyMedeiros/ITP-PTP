@@ -29,34 +29,33 @@ typedef struct{
 	char transparent_color_index;
 	char block_terminator;
 }Graphic_Control_Extension;
-// Total: 13 bytes
+// Total: 21 bytes
 typedef struct{
 	GIF_Header hdr;// 6 bytes
 	Logical_Screen_Description LgScrDsc;// 7 bytes
 	PixelRGB* color_table;
 	// Talvez tenha algo aqui antes do GCE
-	//Graphic_Control_Extension GrphCtrlExt;// 8 bytes
-	//char tr;// 0x3B serve pra quê? num sei
+	Graphic_Control_Extension GrphCtrlExt;// 8 bytes
 }CONTROL_BLOCK;
 
-/* quantos bytes?
-typedef struct{
-	img_Descriptor desc;
-	Color_Table clr_Tbl;
-	Talbe_Based_Image_Data TB_Img_Data;
-	Plain_Text_Extension Plain_Txt_Ext;
-}IMAGE_RENDERING;
-// 10 bytes
+// 10 bytes*/
 typedef struct{
 	char separator;
 	short left_pos;
 	short top_pos;
-	short width;
+	unsigned short width;
 	short height;
 	char pckdFlds; // L I S RR CCC
 }img_Descriptor;
+// quantos bytes?
+typedef struct{
+	img_Descriptor desc; // 10 bytes
+	//Color_Table clr_Tbl;
+	//Talbe_Based_Image_Data TB_Img_Data;
+	//Plain_Text_Extension Plain_Txt_Ext;
+}IMAGE_RENDERING;
 
-typedef struct
+/*typedef struct
 {
 	
 }Color_Table;

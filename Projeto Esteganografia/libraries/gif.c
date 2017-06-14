@@ -35,11 +35,18 @@ int encipher_GIF(FILE *imagem, FILE *saida, FILE *texto){
 	PixelRGB *pxl = ctrl_block.color_table;
 	fread(pxl, 3, ct_size, imagem);
 	for (int i = 0; i < ct_size; ++i){
-		printf("%d, %d, %d\n", pxl->rgb[0], pxl->rgb[1], pxl->rgb[2]);
+		//printf("%d, %d, %d\n", pxl->rgb[0], pxl->rgb[1], pxl->rgb[2]);
 		pxl++;
 	}
-	// TODO
+	// Imagem Descriptor 
+	fread(&ctrl_block.GrphCtrlExt, 1, 8, imagem);
+	printf("%x\n", ctrl_block.GrphCtrlExt.intro);
+	IMAGE_RENDERING img_render;
+	fread(&img_render, 1, 10, imagem);
+	printf("Largura: %d\n", img_render.desc.width);
+
 	free(ctrl_block.color_table);
+
 	return 0;
 }
 

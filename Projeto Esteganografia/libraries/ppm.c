@@ -46,7 +46,6 @@ int encipher_PPM(FILE *imagem, FILE *imagemSaida, FILE *texto){
 	swapLastBit(ptr, 3); // Colocando o sinal de fim de texto - EOT;
 	
 	// Colocando as informações da matriz em arquivo de Saída
-	printf("Gerando arquivo de saída\n");
 	fprintf(imagemSaida, "%s\n%d %d\n%d\n", header.format, header.xSize, header.ySize, header.color_depth);
 	for (i = 0; i < (header.ySize*header.xSize); ++i)
 		fprintf(imagemSaida, "%c%c%c", pxlMtrx[i].rgb[red], pxlMtrx[i].rgb[green], pxlMtrx[i].rgb[blue]);

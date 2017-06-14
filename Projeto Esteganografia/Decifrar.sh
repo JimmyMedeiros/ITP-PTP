@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./steg -d -o segredo1.txt -f bmp saida.bmp
+./steg -d -o texto_saida.txt -f bmp saida.bmp

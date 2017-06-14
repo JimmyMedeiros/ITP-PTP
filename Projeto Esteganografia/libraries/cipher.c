@@ -3,19 +3,14 @@
 
 /* Coloca os caracteres na imagem */
 PixelRGB* swapLastBit (PixelRGB *pixel, char character){
-	unsigned char r;
-	/* Dica: usar um dos operadores OR XOR (^ |) com o resto da divisão */
+	// A operação '&' com 0xFE (11111110) zera o bit menos significativo 
 	for (int i = 0; i < 8; ++i){
-		r = character%2; // armazena cada bit do caracter de trás para frente
-		if ((*pixel).rgb[i%3]%2 != r){ // verifica se o último bit é igual
-			if (r == 1)
-				(*pixel).rgb[i%3] = (*pixel).rgb[i%3] | r; // ex: 100101 ^ 1 = 1 
-			else 
-				(*pixel).rgb[i%3]--; // ex: 100101 ^ 1 = 0
-		}
-		if (((i+1)%3) == 0) // pula de pixel quando um é preenchido
+		(*pixel).rgb[i%3] = ((*pixel).rgb[i%3]&0xFE)^character%2;
+		// pula de pixel quando um é preenchido
+		if (((i+1)%3) == 0)
 			++pixel;
-		character /= 2; // diminui o caracter
+		// Passa o próximo bit para o final do byte
+		character >>= 1; 
 	}
 	return ++pixel;
 }
@@ -30,8 +25,7 @@ void getMessage (FILE *image, char* word, int wordSize){
 		for (int j = 0; j < 8; ++j){
 			fscanf(image, "%c", &c);
 			c %= 2; // pega o último bit
-			//printf("%d", c);
-			letter += c * pow(2, j);
+			letter += (c <<= j); // coloca o bit em seu devido lugar
 		}
 		fscanf(image, "%c", &c); // pega o valor blue que sobrou
 		word[i] = letter;
