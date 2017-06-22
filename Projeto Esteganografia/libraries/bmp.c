@@ -24,6 +24,16 @@ int encipher_BMP(FILE *imagem, FILE *saida, FILE *texto){
 	fread(&hdr, 14, 1, imagem);
 	// Lê o cabeçalho DIB do arquivo
 	fread(&dib, 40, 1, imagem);
+	// Antes de alterar a imagem, verifica se cabe a mensagem 
+	if (verify_message_size(dib.width, dib.height, texto)){
+		return 1;
+	}
+	/*fseek(texto, 0L, SEEK_END);
+	long int tamanho_Mensagem = ftell(texto), mensagem_Max = ((dib.width*dib.height)/3);
+	if(tamanho_Mensagem > mensagem_Max){
+		fprintf(stderr, "A mensagem do arquivo não cabe na imagem.\nO arquivo deve ter no máximo %ld bytes.\n", mensagem_Max);
+		return 1;
+	}*/
 	// Aloca e lê os pixels 
 	pixelArray = malloc(dib.width * dib.height * sizeof(BGRPixel));
 	if (pixelArray == NULL){

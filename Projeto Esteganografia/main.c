@@ -104,18 +104,21 @@ int main(int argc, char *argv[])
 		FILE *img, *textoSaida;
 		if ((img = fopen(image_name, "r")) == NULL)
 			perror("O Seguinte erro ocorre:\n");
-		if (sflag == 1)
-		{
-			textoSaida = stdout;
+		if (sflag == 1){
+		// Coloca a saída no terminal
+			textoSaida = stdout; 
 		} 
 		else if ((textoSaida = fopen(output_file, "w")) == NULL)
-				perror("O Seguinte erro ocorre:\n");
+			perror("O Seguinte erro ocorre:\n");
 		// Pegando a mensagem
 		if (strcmp(format, "ppm")==0 || strcmp(format, "PPM")==0){
 			decipher_PPM (img, textoSaida);
 		}
 		else if (strcmp(format, "bmp")==0 || strcmp(format, "BMP")==0){
 			decipher_BMP (img, textoSaida);
+		}
+		else if (strcmp(format, "gif")==0 || strcmp(format, "GIF")==0){
+			decipher_GIF (img, textoSaida);
 		}
 		
 		fclose(img);

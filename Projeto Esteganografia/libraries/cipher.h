@@ -13,4 +13,6 @@ PixelRGB* swapLastBit (PixelRGB *pixel, char character);
 
 void getMessage (FILE *image, char* word, int wordSize);
 
+int verify_message_size(int width, int height, FILE* text);
+
 #endif

@@ -20,7 +20,7 @@ void getMessage (FILE *image, char* word, int wordSize){
 	// Pega a Mensagem até encontrar um EOT ou até a capavidade máxima da imagem
 	int i = 0; 
 	unsigned char c = 0, letter = 0;
-	while (letter != 3 && i < wordSize){
+	do{
 		letter = 0;
 		for (int j = 0; j < 8; ++j){
 			fscanf(image, "%c", &c);
@@ -30,6 +30,16 @@ void getMessage (FILE *image, char* word, int wordSize){
 		fscanf(image, "%c", &c); // pega o valor blue que sobrou
 		word[i] = letter;
 		++i;
-	}
+	}while (letter != 0 && i < wordSize);
 	word[i-1] = '\0';
+}
+// Verifica se a mensagem cabe na imagem
+int verify_message_size(int width, int height, FILE* text){
+	fseek(text, 0L, SEEK_END);
+	long int message_size = ftell(text), max_size = ((width*height)/3);
+	if(message_size > max_size){
+		fprintf(stderr, "A mensagem do arquivo não cabe na imagem.\nO arquivo deve ter no máximo %ld bytes.\n", max_size);
+		return 1;
+	}
+	return 0;
 }
