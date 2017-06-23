@@ -1,3 +1,37 @@
-Algumas Observações para executar o programa:
-1 - O arquivo com o texto que deve ser cifrado na imagem não deve conter caracteres que não façam parte da table ASCII
-2 - O tamanho máximo do arquivo a ser cifrado segue a fórmula: (w*h)/3 bytes. Onde: w = largura em pixels, h = altura em pixels.
+Projeto de Esteganografia da Disciplina de Técnicas de Programação - UFRN
+Orientado pelo professor Sylvio Sampaio
+
+1 - Sobre o programa
+O programa possui duas funcionalidades: Cifrar e Decifrar.
+	1.1 Cifrar
+	Recebe com input um arquivo texto com a mensagem a ser cifrada e uma imagem para esconder a mensagem e retorna uma outra imagem de saída com a mensagem. Nessa funcionalidade o programa deve ser executado da seguinte maneira:
+./steg -e -i <input-file> -f <format> <image>
+steg é o arquivo executável
+-e indica que o programa deve rodar em modo de codificador (encoder).
+-i <input-file> indica o arquivo de texto com a mensagem a ser codificada.
+-f <format> indica o formato de imagem na qual a mensagem vai ser escondida. Essa opção pode receber três formatos como argumento: ppm, bmp e gif (case senstitive podendo ser todo em caixa alta ou baixa - ex: PPM).
+<image> imagem a ser usada como hospedeira para a mensagem (.ppm, .bmp ou .gif).
+	1.2 Decifrar
+	Recebe como input a imagem e um nome de arquivo no qual a mensagem será colocada ou uma opção para mostrar no terminal. Nessa funcionalidade o programa deve ser executado da seguinte maneira:
+./steg -d -o <output-file> -f <format> <image>
+-d indica que o programa deve rodar em modo de decodificador (decoder).
+-o <output-file> indica o arquivo de saída (output) para onde será gravada a mensagem
+decodificada.
+-s indica que a mensagem decodificada deve ser mostrada na saída padrão (stdout). O uso
+desta opção invalida o uso da opção -o <output-file>.
+-f <format> indica o formato da imagem que vai ser usada para extrair a mensagem. São aceitos os mesmos valores do modo encoder. 
+<image> imagem hospedeira da mensagem (.ppm, .bmp ou .gif).
+
+2 - Observações:
+	2.1 - O arquivo com o texto que deve ser cifrado na imagem não deve conter caracteres que não façam parte da table ASCII (caracteres de tamanho diferente de 1byte). 
+	2.2 - O tamanho máximo do arquivo a ser cifrado, com exceção do gif segue a fórmula: (w*h)/3 bytes. Onde: w = largura da imagem em pixels, h = altura da imagem em pixels. 
+	3.2 - Sobre o gif: diferente do ppm e do bmp a imagem gif não armazena todos os valores de cores de cada pixel. Ao invés disso os dados da imagem são armazenados em forma de índices que indicam uma linha em uma tabela de cores de tamanho máximo de 256 linhas (e 3 colunas de cores red/green/blue). Nesse caso, o LSB é alterado na tabela de cores, portanto o tamanho máximo da mensagem a ser codificada no gif é: tc/3. Onde tc = tamanho da tabela de cores.
+
+3 - Aprendendo com os erros
+	Com a experiência foi possível perceber como a organização e padronização do código pode aumentar a produtividade, economizar tempo e dor de cabeça. Nota mental: Escolher um padrão claro e uniformizado para nomear variáveis. De preferência colocar todos os nomes em inglês seguindo o padrão internacional para programação. O programa está uma mistura de variáveis em português, outras em inglês, algumas em camelcase separando palavras outras com underscore.
+	Outro hábito que também aumenta a produtividade é distribuir bem as funções em bibliotecas. A implementação do programa para ppm foi feita inicialmente toda no arquivo main.c, mas uma vez que foram criadas as bibliotecas das funções a implementação do bmp e do gif foi bem mais rápida.
+
+4 - Compilando o programa
+	O programa deve ser compilado pelo Gnu Compiler Collection. Para isso foi criado um arquivo makefile que se encarrega de compilar as bibliotecas e juntar no programa principal. Foi criada uma bilbioteca com as funções que codificam e decodifica a mensagem (cipher.h). Essas funções não são chamadas dentro do main.c, elas são utilizadas dentro de cada bilbioteca para cada formato específico de imagem (ppm.h, bmp.h e gif.h).
+
+Autoria de: Josivan Medeiros
